@@ -2,15 +2,16 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import dao.MockUserRepository
 import entities.{RestResult, User}
 import play.api.mvc._
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UserController @Inject() (cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class UserController @Inject()(cc: ControllerComponents, userRepository: MockUserRepository)(implicit ec: ExecutionContext) extends AbstractController(cc) {
   implicit val userWrites: Writes[User] = (
     (JsPath \ "id").writeNullable[Long] and
       (JsPath \ "userName").write[String] and
@@ -25,9 +26,9 @@ class UserController @Inject() (cc: ControllerComponents)(implicit ec: Execution
 
   implicit val resultBooleanWrites = Json.writes[RestResult[Boolean]]
 
-  def getContactsList(userId: Long) = Action.apply{
+  def getContactsList(userId: Long) = Action.async {
     _ => {
-      Ok(Json.toJson(List(User(Some(1), "Foo"))))
+      userRepository.loadUsers().map(u => Ok(Json.toJson(u)))
     }
   }
 
