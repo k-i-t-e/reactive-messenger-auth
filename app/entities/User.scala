@@ -1,5 +1,5 @@
 package entities
 
-case class User(id: Long, userName: String)
+case class User(id: Option[Long], userName: String, password: Option[String] = None)
 
 
