@@ -4,11 +4,11 @@ import javax.inject.{Inject, Singleton}
 
 import dao.MockUserRepository
 import entities.{RestResult, User}
-import play.api.mvc._
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import play.api.mvc._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class UserController @Inject()(cc: ControllerComponents, userRepository: MockUserRepository)(implicit ec: ExecutionContext) extends AbstractController(cc) {
