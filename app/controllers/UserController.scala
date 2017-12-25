@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import dao.MockUserRepository
+import dao.UserRepository
 import entities.{RestResult, User}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -11,7 +11,7 @@ import play.api.mvc._
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class UserController @Inject()(cc: ControllerComponents, userRepository: MockUserRepository)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+class UserController @Inject()(cc: ControllerComponents, userRepository: UserRepository)(implicit ec: ExecutionContext) extends AbstractController(cc) {
   implicit val userWrites: Writes[User] = (
     (JsPath \ "id").writeNullable[Long] and
       (JsPath \ "userName").write[String] and
@@ -25,19 +25,21 @@ class UserController @Inject()(cc: ControllerComponents, userRepository: MockUse
   )(User.apply _)
 
   implicit val resultBooleanWrites = Json.writes[RestResult[Boolean]]
+  implicit val resultUserWrites = Json.writes[RestResult[User]]
 
   def getContactsList(userId: Long) = Action.async {
     _ => {
-      userRepository.loadUsers().map(u => Ok(Json.toJson(u)))
+      userRepository.getUsers().map(u => Ok(Json.toJson(u)))
     }
   }
 
   def validateUser = parse.json.validate(v => v.validate.asEither.left.map(e => BadRequest(JsError.toJson(e))))
 
-  def createUser = Action(validateUser) {
+  def createUser = Action(validateUser).async {
     request => {
       val user = request.body
-      Ok(Json.toJson(RestResult[Boolean](true)))
+      userRepository.createUser(user).map(u => Ok(Json.toJson(RestResult[User](u))))
+      //[Boolean](true)))
     }
   }
 }
