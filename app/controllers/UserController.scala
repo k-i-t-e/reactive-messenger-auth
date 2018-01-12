@@ -8,7 +8,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UserController @Inject()(cc: ControllerComponents, userRepository: UserRepository)(implicit ec: ExecutionContext) extends AbstractController(cc) {
@@ -35,11 +35,20 @@ class UserController @Inject()(cc: ControllerComponents, userRepository: UserRep
 
   def validateUser = parse.json.validate(v => v.validate.asEither.left.map(e => BadRequest(JsError.toJson(e))))
 
-  def createUser = Action(validateUser).async {
+  def register = Action(validateUser).async {
     request => {
       val user = request.body
       userRepository.createUser(user).map(u => Ok(Json.toJson(RestResult[User](u))))
-      //[Boolean](true)))
+    }
+  }
+
+  def login = Action(validateUser).async {
+    req => {
+      val userRequest = req.body
+      userRepository.getUser(userRequest.userName, userRequest.password.get).map {
+        case Some(u) => Ok(Json.toJson(u.hidePassword))
+        case None => Unauthorized
+      }
     }
   }
 }
