@@ -55,7 +55,7 @@ class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigPr
 
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
     findUserByName(loginInfo.providerKey).map({
-      case Some(u) => Some(PasswordInfo("bcrypt", u.password.get, Option(BCrypt.gensalt)))
+      case Some(u) => Some(PasswordInfo("bcrypt", u.password.get, None))
       case None => None
     })
   }
@@ -67,7 +67,14 @@ class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigPr
                       authInfo: PasswordInfo): Future[PasswordInfo] = ???
 
   override def save(loginInfo: LoginInfo,
-                    authInfo: PasswordInfo): Future[PasswordInfo] = ???
+                    authInfo: PasswordInfo): Future[PasswordInfo] = {
+    val u = User(None, loginInfo.providerKey, Some(authInfo.password))
+    val q = for {
+      oldUser <- users if oldUser.name === u.userName
+    } yield oldUser.password
+
+    db.run(q.update(authInfo.password).transactionally).map(i => authInfo)
+  }
 
   override def remove(loginInfo: LoginInfo): Future[Unit] = ???
 }

@@ -24,23 +24,9 @@ class AuthController @Inject()(cc: ControllerComponents,
       val userRequest = req.body
       userRequest.password match {
         case Some(password) => {
-          for {
-            auth <- credentialsProvider.authenticate(Credentials(userRequest.userName, password))
-            user <- userRepository.findUser(userRequest)
-          } yield {
-            System.out.println(auth.providerID)
-            user match {
-              case Some(u) => Ok(Json.toJson(RestResult[User](u.hidePassword)))
-              case None => Unauthorized
-            }
-          }
-          /*credentialsProvider.authenticate(Credentials(userRequest.userName, password)).map(info => {
-            System.out.println(info.providerID)
-          })
-          userRepository.findUser(userRequest).map {
-           case Some(u) => Ok(Json.toJson(RestResult[User](u.hidePassword)))
-           case None => Unauthorized
-         }*/
+          credentialsProvider.authenticate(Credentials(userRequest.userName, password))
+            .map(auth => Ok(Json.toJson(RestResult[User](User(None, auth.providerKey, None)))))
+            .recover({ case _ => Unauthorized })
         }
         case None => Future.successful(Unauthorized)
       }
