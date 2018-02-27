@@ -45,7 +45,7 @@ class UserController @Inject()(cc: ControllerComponents, userRepository: UserRep
   def login = Action(validateUser).async {
     req => {
       val userRequest = req.body
-      userRepository.getUser(userRequest.userName, userRequest.password.get).map {
+      userRepository.findUser(userRequest).map {
         case Some(u) => Ok(Json.toJson(u.hidePassword))
         case None => Unauthorized
       }
