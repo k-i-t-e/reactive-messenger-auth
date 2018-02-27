@@ -14,6 +14,8 @@ libraryDependencies ++= Seq( jdbc , ehcache , ws , specs2 % Test , guice )
 libraryDependencies += "org.postgresql" % "postgresql" % "42.1.1"
 libraryDependencies += evolutions // evolutions
 libraryDependencies += "com.typesafe.play" %% "play-slick" % "3.0.3"
+libraryDependencies += "net.codingwell" %% "scala-guice" % "4.1.0"
+libraryDependencies += "com.iheart" %% "ficus" % "1.4.3" // config lib, used by Silhouette,
 
 // Silhouette config
 val silhouetteVer = "5.0.0"

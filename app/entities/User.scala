@@ -1,8 +1,6 @@
 package entities
 
-import com.mohiva.play.silhouette.api.Identity
-
-case class User(id: Option[Long], userName: String, password: Option[String] = None) extends Identity {
+case class User(id: Option[Long], userName: String, password: Option[String] = None) {
   def hidePassword: User = User(id, userName)
 }
 

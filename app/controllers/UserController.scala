@@ -20,6 +20,7 @@ class UserController @Inject()(cc: ControllerComponents, userRepository: UserRep
   def register = Action(validateUser).async {
     request => {
       val user = request.body
+
       userRepository.createUser(user).map(u => Ok(Json.toJson(RestResult[User](u))))
     }
   }
