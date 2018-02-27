@@ -9,7 +9,8 @@ GET     /                           controllers.HomeController.index
 GET     /message                    controllers.AsyncController.message
 
 GET /user/:userId/contacts  controllers.UserController.getContactsList(userId: Long)
-POST /user/register  controllers.UserController.createUser
+POST /register  controllers.UserController.register
+POST /login controllers.UserController.login
 
 POST /user/login controllers.UserController.login
 
