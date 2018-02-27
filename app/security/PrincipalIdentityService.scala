@@ -15,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PrincipalIdentityService @Inject() (userRepository: UserRepository,
                                           passwordHasher: PasswordHasher)(implicit ec: ExecutionContext) extends UserDetailsService {
   override def retrieve(loginInfo: LoginInfo): Future[Option[Principal]] = {
-    userRepository.findUser(User(None, loginInfo.providerID, Option(loginInfo.providerKey)))
+    userRepository.findUserByName(loginInfo.providerKey)
       .map(opt => opt.flatMap(u => Option(Principal(loginInfo, u.userName, None))))
   }
 

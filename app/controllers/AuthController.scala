@@ -19,6 +19,7 @@ class AuthController @Inject()(cc: ControllerComponents,
                                silhouette: Silhouette[DefaultEnv],
                                credentialsProvider: CredentialsProvider)
                               (implicit ec: ExecutionContext) extends AbstractAuthController(cc) {
+
   def login = Action(validateUser).async {
     implicit req => {
       val userRequest = req.body
@@ -35,6 +36,12 @@ class AuthController @Inject()(cc: ControllerComponents,
         }
         case None => Future.successful(Unauthorized)
       }
+    }
+  }
+
+  def check = silhouette.SecuredAction.async {
+    implicit request => {
+      Future.successful(Ok(Json.toJson(request.identity.userName)))
     }
   }
 }
