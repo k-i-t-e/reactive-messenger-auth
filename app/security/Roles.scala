@@ -6,6 +6,9 @@ import play.api.mvc.Request
 
 import scala.concurrent.Future
 
+/**
+  * Useless for now, roles declarations
+  */
 object Roles {
   sealed abstract class Role(val name: String)
   case object RoleAdmin extends Role("ADMIN")

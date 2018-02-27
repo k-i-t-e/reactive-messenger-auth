@@ -26,16 +26,7 @@ class PrincipalIdentityService @Inject() (userRepository: UserRepository,
     * @return
     */
   def create(user: User)(implicit request: Request[_]): Future[User] = {
-    val loginInfo = LoginInfo(CredentialsProvider.ID, user.userName)
     val passwordInfo = passwordHasher.hash(user.password.get)
-
-    for {
-      newUser <- userRepository.createUser(user)
-      newPasswordInfo <- userRepository.save(loginInfo, passwordInfo)
-      //authenticator <- silhouette.env.authenticatorService.create(loginInfo)
-      //token <- silhouette.env.authenticatorService.init(authenticator)
-    } yield {
-      newUser
-    }
+    userRepository.createUser(User(user.id, user.userName, Some(passwordInfo.password)))
   }
 }

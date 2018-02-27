@@ -9,6 +9,11 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 
 import scala.concurrent.ExecutionContext
 
+/***
+  * Basic abstract controller for Auth application. Contains all the required implicit Reads/Writes declarations
+  * @param cc
+  * @param ec
+  */
 class AbstractAuthController @Inject()(cc: ControllerComponents)(implicit ec: ExecutionContext) extends AbstractController(cc) {
   implicit val userWrites: Writes[User] = (
     (JsPath \ "id").writeNullable[Long] and

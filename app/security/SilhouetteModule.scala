@@ -27,6 +27,9 @@ import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+/**
+  * Creepy stuff to make Silhouette working. Declares all the required dependencies and binds them together
+  */
 class SilhouetteModule extends AbstractModule with ScalaModule with AkkaGuiceSupport {
   override def configure() = {
     bind[DelegableAuthInfoDAO[PasswordInfo]].to[UserRepository]
