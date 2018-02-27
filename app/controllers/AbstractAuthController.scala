@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
-import entities.{RestResult, User}
+import entities.{RestResult, User, UserAndToken}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.mvc.{AbstractController, ControllerComponents}
@@ -22,9 +22,12 @@ class AbstractAuthController @Inject()(cc: ControllerComponents)(implicit ec: Ex
     (JsPath \ "password").readNullable[String]
   )(User.apply _)
 
+  implicit val UserAndTokenWrites = Json.writes[UserAndToken]
+
   implicit val resultBooleanWrites = Json.writes[RestResult[Boolean]]
   implicit val resultUserWrites = Json.writes[RestResult[User]]
   implicit val resultUserSeqWrites = Json.writes[RestResult[Seq[User]]]
+  implicit val resultUserAndTokenWrites = Json.writes[RestResult[UserAndToken]]
 
   protected def validateUser = parse.json.validate(v => v.validate.asEither.left.map(e => BadRequest(JsError.toJson(e))))
 }
