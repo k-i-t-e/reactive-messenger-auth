@@ -24,6 +24,13 @@ class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigPr
 
   def getUser(id: Long): Future[User] = db.run(users.filter(_.id === id).result.head).map(_.hidePassword)
 
+  def findUser(user: User): Future[Option[User]] = db.run {
+    users
+      .filter(row => row.name === user.userName && row.password === user.password)
+      .result
+      .headOption
+  }
+
   def createUser(user: User): Future[User] = {
     val action = (
       for {
