@@ -10,7 +10,7 @@ resolvers += Resolver.jcenterRepo
       
 scalaVersion := "2.12.2"
 
-libraryDependencies ++= Seq( jdbc , ehcache , ws , specs2 % Test , guice )
+libraryDependencies ++= Seq( ehcache , ws , specs2 % Test , guice )
 libraryDependencies += "org.postgresql" % "postgresql" % "42.1.1"
 
 // Database

@@ -1,19 +1,17 @@
 package dao
 
 import javax.inject.{Inject, Singleton}
-
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import entities.User
-import org.mindrot.jbcrypt.BCrypt
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.PostgresProfile
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)(implicit context: DatabaseExecutionContext)
+class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
   extends DelegableAuthInfoDAO[PasswordInfo] with HasDatabaseConfigProvider[PostgresProfile] {
   import profile.api._
 

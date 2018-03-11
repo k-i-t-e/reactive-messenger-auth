@@ -7,10 +7,8 @@ import entities.User
 import scala.concurrent.Future
 
 @Singleton
-class MockUserRepository @Inject()(implicit context: DatabaseExecutionContext) {
+class MockUserRepository @Inject() {
   def loadUsers(): Future[Seq[User]] = {
-    Future {
-      List(User(Some(1), "Foo"))
-    }
+    Future.successful(List(User(Some(1), "Foo")))
   }
 }
