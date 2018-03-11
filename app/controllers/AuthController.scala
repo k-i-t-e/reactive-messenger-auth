@@ -28,7 +28,7 @@ class AuthController @Inject()(cc: ControllerComponents,
           credentialsProvider.authenticate(Credentials(userRequest.userName, password)).flatMap(auth =>
             silhouette.env.authenticatorService.create(auth).flatMap(authenticator =>
               silhouette.env.authenticatorService.init(authenticator).map(token => {
-                silhouette.env.eventBus.publish(LoginEvent(Principal(auth, userRequest.userName, None), req))
+                silhouette.env.eventBus.publish(LoginEvent(Principal(auth, userRequest.userName, 0, None), req))
                 Ok(Json.toJson(RestResult[UserAndToken](UserAndToken(User(None, auth.providerKey, None), token))))
               })
             )

@@ -1,5 +1,8 @@
 package dao
 
+import java.sql.Timestamp
+import java.util.Date
+
 import javax.inject.{Inject, Singleton}
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
@@ -25,7 +28,23 @@ class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigPr
 
   private val users = TableQuery[UserTable]
 
-  def getUser(id: Long): Future[User] = db.run(users.filter(_.id === id).result.head).map(_.hidePassword)
+  private type Contact = (Long, Long, Timestamp)
+  private class ContactsTable(tag: Tag) extends Table[Contact](tag, "contact_list") {
+    def userId = column[Long]("user_id")
+    def contactId = column[Long]("contact_id")
+    def createdDate = column[Timestamp]("created_date")
+
+    def pk = primaryKey("pk_user_id_contact_id", (userId, contactId))
+    def userIdFk = foreignKey("user_id", userId, users)(_.id)
+    def contactIdFk = foreignKey("user_id", contactId, users)(_.id)
+
+    override def * = (userId, contactId, createdDate)
+  }
+
+  private val contacts = TableQuery[ContactsTable]
+
+  def getUser(id: Long): Future[Option[User]] = db.run(users.filter(_.id === id).result.headOption)
+    .map(u => u.map(_.hidePassword))
 
   def findUser(user: User): Future[Option[User]] = db.run {
     users
@@ -49,7 +68,22 @@ class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigPr
     db.run(action).map(_.hidePassword)
   }
 
-  def getUsers(): Future[Seq[User]] = db.run(users.result).map(u => u.map(_.hidePassword)) // just for testing
+  def getContacts(userId: Long): Future[Seq[User]] = {
+    val join = for {
+      user <- users if user.id === userId
+      contact <- contacts if contact.userId === user.id
+      contactUser <- users if contactUser.id === contact.contactId
+    } yield contactUser
+    db.run(join.result).map(u => u.map(_.hidePassword))
+  }
+
+  def createContact(userId: Long, contactId: Long, createdDate: Date): Future[_] = {
+    db.run {
+      (
+        contacts += (userId, contactId, new Timestamp(createdDate.getTime))
+      ).transactionally
+    }
+  }
 
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
     findUserByName(loginInfo.providerKey).map({

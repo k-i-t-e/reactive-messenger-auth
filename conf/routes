@@ -8,8 +8,10 @@ GET     /                           controllers.HomeController.index
 # An example controller showing how to write asynchronous code
 GET     /message                    controllers.AsyncController.message
 
-GET /user/:userId/contacts  controllers.UserController.getContactsList(userId: Long)
+GET /user/contacts  controllers.UserController.getContactsList
+PUT /user/contacts/:contactId  controllers.UserController.addContact(contactId: Long)
 POST /register  controllers.UserController.register
+
 POST /login controllers.AuthController.login
 GET /check controllers.AuthController.check
 

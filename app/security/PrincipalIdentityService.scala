@@ -17,7 +17,7 @@ class PrincipalIdentityService @Inject() (userRepository: UserRepository,
                                          (implicit ec: ExecutionContext) extends UserDetailsService {
   override def retrieve(loginInfo: LoginInfo): Future[Option[Principal]] = {
     userRepository.findUserByName(loginInfo.providerKey)
-      .map(opt => opt.flatMap(u => Option(Principal(loginInfo, u.userName, None))))
+      .map(opt => opt.flatMap(u => Option(Principal(loginInfo, u.userName, u.id.get, None))))
   }
 
   /**
