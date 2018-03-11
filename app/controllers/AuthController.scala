@@ -1,12 +1,12 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
-
 import com.mohiva.play.silhouette.api.{LoginEvent, Silhouette}
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import controllers.vo.{RestResult, UserAndToken}
 import dao.UserRepository
-import entities.{RestResult, User, UserAndToken}
+import entities.User
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
 import security.{DefaultEnv, Principal}

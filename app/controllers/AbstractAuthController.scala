@@ -1,8 +1,8 @@
 package controllers
 
+import controllers.vo.{RestResult, UserAndToken}
 import javax.inject.Inject
-
-import entities.{RestResult, User, UserAndToken}
+import entities.User
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.mvc.{AbstractController, ControllerComponents}

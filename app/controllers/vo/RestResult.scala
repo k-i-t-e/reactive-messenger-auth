@@ -1,4 +1,4 @@
-package entities
+package controllers.vo
 
 case class RestResult[T](payload: Option[T], status: ResultStatus.Value, message: String = null)
 
