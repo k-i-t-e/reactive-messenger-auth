@@ -10,8 +10,9 @@ GET     /message                    controllers.AsyncController.message
 
 GET /user/contacts  controllers.UserController.getContactsList
 PUT /user/contacts/:contactId  controllers.UserController.addContact(contactId: Long)
-POST /register  controllers.UserController.register
+DELETE /user/contacts/:contactId    controllers.UserController.deleteContact(contactId: Long)
 
+POST /register  controllers.AuthController.register
 POST /login controllers.AuthController.login
 GET /check controllers.AuthController.check
 

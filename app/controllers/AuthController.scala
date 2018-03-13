@@ -1,6 +1,7 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
+
 import com.mohiva.play.silhouette.api.{LoginEvent, Silhouette}
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
@@ -9,13 +10,13 @@ import dao.UserRepository
 import entities.User
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
-import security.{DefaultEnv, Principal}
+import security.{DefaultEnv, Principal, PrincipalIdentityService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AuthController @Inject()(cc: ControllerComponents,
-                               userRepository: UserRepository,
+                               principalIdentityService: PrincipalIdentityService,
                                silhouette: Silhouette[DefaultEnv],
                                credentialsProvider: CredentialsProvider)
                               (implicit ec: ExecutionContext) extends AbstractAuthController(cc) {
@@ -36,6 +37,13 @@ class AuthController @Inject()(cc: ControllerComponents,
         }
         case None => Future.successful(Unauthorized)
       }
+    }
+  }
+
+  def register = Action(validateUser).async {
+    implicit request => {
+      val user = request.body
+      principalIdentityService.create(user).map(u => Ok(Json.toJson(RestResult[User](u))))
     }
   }
 

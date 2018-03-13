@@ -2,11 +2,12 @@ package dao
 
 import java.sql.Timestamp
 import java.util.Date
-
 import javax.inject.{Inject, Singleton}
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
+import dao.tables.{ContactsTable, UserTable}
 import entities.User
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.jdbc.PostgresProfile
@@ -18,29 +19,7 @@ class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigPr
   extends DelegableAuthInfoDAO[PasswordInfo] with HasDatabaseConfigProvider[PostgresProfile] {
   import profile.api._
 
-  private class UserTable(tag: Tag) extends Table[User](tag, "messenger_user") {
-    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-    def name = column[String]("name")
-    def password = column[String]("password")
-
-    override def * = (id.?, name, password.?) <> (User.tupled, User.unapply)
-  }
-
   private val users = TableQuery[UserTable]
-
-  private type Contact = (Long, Long, Timestamp)
-  private class ContactsTable(tag: Tag) extends Table[Contact](tag, "contact_list") {
-    def userId = column[Long]("user_id")
-    def contactId = column[Long]("contact_id")
-    def createdDate = column[Timestamp]("created_date")
-
-    def pk = primaryKey("pk_user_id_contact_id", (userId, contactId))
-    def userIdFk = foreignKey("user_id", userId, users)(_.id)
-    def contactIdFk = foreignKey("user_id", contactId, users)(_.id)
-
-    override def * = (userId, contactId, createdDate)
-  }
-
   private val contacts = TableQuery[ContactsTable]
 
   def getUser(id: Long): Future[Option[User]] = db.run(users.filter(_.id === id).result.headOption)
@@ -83,6 +62,10 @@ class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigPr
         contacts += (userId, contactId, new Timestamp(createdDate.getTime))
       ).transactionally
     }
+  }
+
+  def deleteContact(userId: Long, contactId: Long): Future[_] = {
+    db.run(contacts.filter(c => c.userId === userId && c.contactId === contactId).delete.transactionally)
   }
 
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {

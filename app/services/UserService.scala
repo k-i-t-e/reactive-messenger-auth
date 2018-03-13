@@ -21,4 +21,7 @@ class UserService @Inject()(userRepository: UserRepository)(implicit ec: Executi
       case Some(_) => userRepository.createContact(request.identity.userId, contactId, new Date())
       case None => throw new MessengerException(s"User with ID = $contactId was not found")
     })
+
+  def deleteContact(contactId: Long)(implicit request: SecuredRequest[DefaultEnv, _]): Future[_] =
+    userRepository.deleteContact(request.identity.userId, contactId)
 }

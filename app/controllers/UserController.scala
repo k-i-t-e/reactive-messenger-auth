@@ -14,7 +14,6 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class UserController @Inject()(cc: ControllerComponents,
                                userService: UserService,
-                               principalIdentityService: PrincipalIdentityService,
                                silhouette: Silhouette[DefaultEnv])(implicit ec: ExecutionContext)
   extends AbstractAuthController(cc) {
   def getContactsList = silhouette.SecuredAction.async {
@@ -25,11 +24,8 @@ class UserController @Inject()(cc: ControllerComponents,
     implicit request => userService.addContact(contactId).map(_ => Ok(Json.toJson(RestResult(true))))
   }
 
-  def register = Action(validateUser).async {
-    implicit request => {
-      val user = request.body
-      principalIdentityService.create(user).map(u => Ok(Json.toJson(RestResult[User](u))))
-    }
+  def deleteContact(contactId: Long) = silhouette.SecuredAction.async {
+    implicit request => userService.deleteContact(contactId).map(_ => Ok(Json.toJson(RestResult(true))))
   }
 }
 
