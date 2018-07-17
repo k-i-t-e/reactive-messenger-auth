@@ -27,5 +27,9 @@ class UserController @Inject()(cc: ControllerComponents,
   def deleteContact(contactId: Long) = silhouette.SecuredAction.async {
     implicit request => userService.deleteContact(contactId).map(_ => Ok(Json.toJson(RestResult(true))))
   }
+
+  def searchContacts(name: String) = silhouette.SecuredAction.async {
+    request => userService.findUsers(name).map(users => Ok(Json.toJson(RestResult(users))))
+  }
 }
 

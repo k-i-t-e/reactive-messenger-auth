@@ -24,4 +24,6 @@ class UserService @Inject()(userRepository: UserRepository)(implicit ec: Executi
 
   def deleteContact(contactId: Long)(implicit request: SecuredRequest[DefaultEnv, _]): Future[_] =
     userRepository.deleteContact(request.identity.userId, contactId)
+
+  def findUsers(name: String): Future[Seq[User]] = userRepository.findUsers(name)
 }

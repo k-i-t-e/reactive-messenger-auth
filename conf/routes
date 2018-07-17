@@ -11,6 +11,7 @@ GET     /message                    controllers.AsyncController.message
 GET /user/contacts  controllers.UserController.getContactsList
 PUT /user/contacts/:contactId  controllers.UserController.addContact(contactId: Long)
 DELETE /user/contacts/:contactId    controllers.UserController.deleteContact(contactId: Long)
+GET /users  controllers.UserController.searchContacts(name)
 
 POST /register  controllers.AuthController.register
 POST /login controllers.AuthController.login

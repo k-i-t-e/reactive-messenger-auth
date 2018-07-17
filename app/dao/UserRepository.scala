@@ -36,6 +36,10 @@ class UserRepository @Inject() (protected val dbConfigProvider: DatabaseConfigPr
     users.filter(r => r.name === userName).result.headOption
   }
 
+  def findUsers(userName: String): Future[Seq[User]] = db.run {
+    users.filter(u => u.name.toLowerCase like s"$userName%").result
+  } map(u => u.map(_.hidePassword))
+
   def createUser(user: User): Future[User] = {
     val action = (
       for {
